@@ -1,0 +1,31 @@
+{
+  "name": "fastify-good-sessions",
+  "version": "1.0.0",
+  "description": "A good fastify sessions plugin focused on speed.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Phara0h/fastify-good-sessions.git"
+  },
+  "keywords": [
+    "fastify",
+    "sessions",
+    "fast",
+    "good",
+    "session",
+    "plugin"
+  ],
+  "author": "Jt Whissel",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Phara0h/fastify-good-sessions/issues"
+  },
+  "homepage": "https://github.com/Phara0h/fastify-good-sessions#readme",
+  "dependencies": {
+    "cookie-signature": "^1.1.0",
+    "fastify-plugin": "^1.6.0"
+  }
+}
