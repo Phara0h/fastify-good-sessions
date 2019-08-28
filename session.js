@@ -7,6 +7,7 @@ class Session {
     this.secret = secret;
     this._data = {};
     this._init = false;
+    this._dataChanged = false;
     this.sessionId = id;
     if(data) {
       this.data = data;
@@ -19,6 +20,7 @@ class Session {
 
   set data(d) {
     this._init=true;
+    this._dataChanged = true;
     this._data =d;
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "fastify-good-sessions",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A good fastify sessions plugin focused on speed.",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "plugin"
   ],
   "author": "Jt Whissel",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Phara0h/fastify-good-sessions/issues"
   },

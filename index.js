@@ -14,7 +14,7 @@ function session (fastify, options, next) {
     fastify.decorateRequest('sessionStore', options.store);
     fastify.decorateRequest('session', {});
     fastify.decorateRequest('createSession', function(id, data) {
-      this.session =  new Session(options.secret, id, data, options.cookie.maxAge);
+      this.session =  new Session(options.secret, id, data, Date.now() + options.cookie.maxAge);
     });
     fastify.decorateRequest('destroySession', destroySession);
     fastify.addHook('preValidation', preValidation(options));
@@ -89,12 +89,21 @@ function preValidation (options) {
             })
             return;
           }
-          request.session = new Session(
-            secret,
-            decryptedSessionId,
-            session._data,
-            session.expires
-          )
+          if(session) {
+            request.session = session;
+            request.session.sessionId = decryptedSessionId;
+            done();
+            return;
+          }
+          else {
+            request.session = new Session(
+              secret,
+              decryptedSessionId,
+              session._data,
+              session.expires
+            )
+          }
+
           done();
         })
       }
@@ -143,7 +152,9 @@ function setCookieExpire(cookie) {
 }
 
 function newSession (secret, maxAge, done) {
-  request.session = new Session(secret, null, null, maxAge);
+  console.log('hi')
+    const request = this
+  request.session = new Session(secret, null, null, Date.now() + maxAge);
   if(done) {
       done()
   }
@@ -193,6 +204,13 @@ function ensureDefaults (options) {
 function shouldSaveSession (request, cookieOpts, saveUninitialized) {
   if (!saveUninitialized && !request.session._init) {
     return false
+  }
+
+  if(request.session._dataChanged) {
+    request.session._dataChanged = false;
+    return true;
+  } else {
+    return false;
   }
   if (cookieOpts.secure !== true) {
     return true
