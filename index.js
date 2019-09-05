@@ -152,7 +152,6 @@ function setCookieExpire(cookie) {
 }
 
 function newSession (secret, maxAge, done) {
-  console.log('hi')
     const request = this
   request.session = new Session(secret, null, null, Date.now() + maxAge);
   if(done) {
@@ -206,6 +205,7 @@ function shouldSaveSession (request, cookieOpts, saveUninitialized) {
     return false
   }
 
+  if(request.)
   if(request.session._dataChanged) {
     request.session._dataChanged = false;
     return true;
