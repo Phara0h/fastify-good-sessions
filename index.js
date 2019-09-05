@@ -160,7 +160,7 @@ function newSession (secret, maxAge, done) {
 }
 
 function destroySession (done) {
-  const request = this
+  const request = this;
   request.sessionStore.destroy(request.session.sessionId, (err) => {
     request.session = null
     done(err)
@@ -205,7 +205,6 @@ function shouldSaveSession (request, cookieOpts, saveUninitialized) {
     return false
   }
 
-  if(request.)
   if(request.session._dataChanged) {
     request.session._dataChanged = false;
     return true;
