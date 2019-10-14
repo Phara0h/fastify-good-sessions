@@ -17,7 +17,7 @@ function session (fastify, options, next) {
       this.session =  new Session(options.secret, id, data, Date.now() + options.cookie.maxAge);
     });
     fastify.decorateRequest('destroySession', destroySession);
-    fastify.addHook('preValidation', preValidation(options));
+    fastify.addHook('onRequest', preValidation(options));
     fastify.addHook('onSend', onSend(options));
     next();
   })
