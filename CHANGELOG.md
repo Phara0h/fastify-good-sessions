@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [v1.4.0](https://github.com/Phara0h/fastify-good-sessions/compare/v1.3.0...v1.4.0)
+
+> 8 February 2021
+
+- Bump handlebars from 4.2.0 to 4.5.3 [`#1`](https://github.com/Phara0h/fastify-good-sessions/pull/1)
+- Updated to latest fastify [`64c0ce7`](https://github.com/Phara0h/fastify-good-sessions/commit/64c0ce73ff828116d539976a46624bfa57e2e077)
+
+#### [v1.3.0](https://github.com/Phara0h/fastify-good-sessions/compare/v1.2.1...v1.3.0)
+
+> 14 October 2019
+
+- changed from preVal to oonRequest [`1f36410`](https://github.com/Phara0h/fastify-good-sessions/commit/1f364102f3604f3115388e724c4289b75c65ffba)
+
 #### [v1.2.1](https://github.com/Phara0h/fastify-good-sessions/compare/v1.2.0...v1.2.1)
 
 > 5 September 2019
