@@ -234,7 +234,7 @@ var isSetDefault = function(v, d) {
 };
 
 exports = module.exports = fastifyPlugin(session,   {
-  fastify: '^2.0.0',
+  fastify: '^3.0.0',
   name: 'fastify-good-session',
   dependencies: [
     'fastify-cookie'
