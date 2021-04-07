@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [v1.4.1](https://github.com/Phara0h/fastify-good-sessions/compare/v1.4.0...v1.4.1)
+
+> 7 April 2021
+
+- Fixed session keep alive [`6d87d9d`](https://github.com/Phara0h/fastify-good-sessions/commit/6d87d9dba61e20d5cf7b682b547d521528ad491e)
+
 #### [v1.4.0](https://github.com/Phara0h/fastify-good-sessions/compare/v1.3.0...v1.4.0)
 
 > 8 February 2021

@@ -1,6 +1,6 @@
 {
   "name": "fastify-good-sessions",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A good fastify sessions plugin focused on speed.",
   "main": "index.js",
   "scripts": {
