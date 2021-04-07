@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [v1.4.2](https://github.com/Phara0h/fastify-good-sessions/compare/v1.4.1...v1.4.2)
+
+> 7 April 2021
+
+- fixed deprecated use of request. [`d1bdcd2`](https://github.com/Phara0h/fastify-good-sessions/commit/d1bdcd20f936ac594574f8c18738e2b833689560)
+
 #### [v1.4.1](https://github.com/Phara0h/fastify-good-sessions/compare/v1.4.0...v1.4.1)
 
 > 7 April 2021
