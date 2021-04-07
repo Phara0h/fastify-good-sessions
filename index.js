@@ -33,7 +33,7 @@ function preValidation (options) {
 
 
   return function handleSession (request, reply, done) {
-    const url = request.req.url;
+    const url = request.raw.url;
     if (url.indexOf(cookieOpts.path || '/') !== 0) {
       done();
       return;
@@ -214,7 +214,7 @@ function shouldSaveSession (request, cookieOpts, saveUninitialized) {
   if (cookieOpts.secure !== true) {
     return true
   }
-  const connection = request.req.connection
+  const connection = request.raw.connection
   if (connection && connection.encrypted === true) {
     return true
   }
