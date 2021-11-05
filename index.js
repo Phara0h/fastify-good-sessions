@@ -1,54 +1,50 @@
-'use strict'
+'use strict';
 
-const fastifyPlugin = require('fastify-plugin')
-const Store = require('./memorystore')
-var Session = require('./session.js')
-const cookieSignature = require('cookie-signature')
+const fastifyPlugin = require('fastify-plugin');
+const Store = require('./memorystore');
+var Session = require('./session.js');
+const cookieSignature = require('cookie-signature');
 const crypto = require('crypto');
 
-function session (fastify, options, next) {
-
-  ensureDefaults(options).then(options=>{
-
-
-    fastify.decorateRequest('sessionStore', options.store);
-    fastify.decorateRequest('session', {});
-    fastify.decorateRequest('createSession', function(id, data) {
-      this.session =  new Session(options.secret, id, data, Date.now() + (options.cookie.maxAge * 1000));
+function session(fastify, options, next) {
+  ensureDefaults(options).then((options) => {
+    fastify.addHook('onRequest', (req, res, done) => {
+      req.sessionStore = options.store;
+      req.session = {};
+      req.createSession = createSession;
+      req.destroySession = destroySession;
+      done();
     });
-    fastify.decorateRequest('destroySession', destroySession);
     fastify.addHook('onRequest', preValidation(options));
     fastify.addHook('onSend', onSend(options));
     next();
-  })
-
-
+  });
 }
 
-
-function preValidation (options) {
+function preValidation(options) {
   const cookieOpts = options.cookie;
   const secret = options.secret;
 
-
-
-  return function handleSession (request, reply, done) {
+  return function handleSession(request, reply, done) {
     const url = request.raw.url;
+
     if (url.indexOf(cookieOpts.path || '/') !== 0) {
       done();
       return;
     }
-    var sessionId = request.cookies[options.cookieName]
+    var sessionId = request.cookies[options.cookieName];
+
     if (!sessionId) {
-      if(options.saveUninitialized) {
+      if (options.saveUninitialized) {
         newSession(secret, cookieOpts.maxAge, done);
       } else {
         done();
       }
     } else {
-      const decryptedSessionId = Session.unsign(sessionId, secret)
+      const decryptedSessionId = Session.unsign(sessionId, secret);
+
       if (decryptedSessionId === false) {
-        if(options.saveUninitialized) {
+        if (options.saveUninitialized) {
           newSession(secret, cookieOpts.maxAge, done);
         } else {
           done();
@@ -57,18 +53,18 @@ function preValidation (options) {
         options.store.get(decryptedSessionId, (err, session) => {
           if (err) {
             if (err.code === 'ENOENT') {
-              if(options.saveUninitialized) {
+              if (options.saveUninitialized) {
                 newSession(secret, cookieOpts.maxAge, done);
               } else {
                 done();
               }
             } else {
-              done(err)
+              done(err);
             }
             return;
           }
           if (!session) {
-            if(options.saveUninitialized) {
+            if (options.saveUninitialized) {
               newSession(secret, cookieOpts.maxAge, done);
             } else {
               done();
@@ -76,74 +72,64 @@ function preValidation (options) {
             return;
           }
           if (session && session.expires && session.expires <= Date.now()) {
-            options.store.destroy(decryptedSessionId, (err)=> {
+            options.store.destroy(decryptedSessionId, (err) => {
               if (err) {
                 done(err);
                 return;
               }
-              if(options.saveUninitialized) {
+              if (options.saveUninitialized) {
                 newSession(secret, cookieOpts.maxAge, done);
               } else {
                 done();
               }
-            })
+            });
             return;
           }
-          if(session) {
+          if (session) {
             request.session = session;
             request.session.sessionId = decryptedSessionId;
             done();
             return;
-          }
-          else {
-            request.session = new Session(
-              secret,
-              decryptedSessionId,
-              session._data,
-              session.expires
-            )
+          } else {
+            request.session = new Session(secret, decryptedSessionId, session._data, session.expires);
           }
 
           done();
-        })
+        });
       }
     }
-  }
+  };
 }
 
-function onSend (options) {
-  return function saveSession (request, reply, payload, done) {
-    const session = request.session
+function onSend(options) {
+  return function saveSession(request, reply, payload, done) {
+    const session = request.session;
+
     if (!session || !session.sessionId || !shouldSaveSession(request, options.cookie, options.saveUninitialized)) {
-      done()
-      return
+      done();
+      return;
     }
     options.store.set(session.sessionId, session, async (err) => {
       if (err) {
-        done(err)
-        return
+        done(err);
+        return;
       }
-      var cookie = setCookieExpire({...options.cookie});
+      // var cookie = setCookieExpire({ ...options.cookie });
 
-      reply.setCookie(
-        options.cookieName,
-        await session.sign(),
-        setCookieExpire({...options.cookie})
-      )
-      done()
-    })
-  }
+      reply.setCookie(options.cookieName, await session.sign(), setCookieExpire({ ...options.cookie }));
+      done();
+    });
+  };
 }
 
-function getDestroyCallback (secret, request, reply, done, cookieOpts) {
-  return function destroyCallback (err) {
+function getDestroyCallback(secret, request, reply, done, cookieOpts) {
+  return function destroyCallback(err) {
     if (err) {
-      done(err)
-      return
+      done(err);
+      return;
     }
-    newSession(secret, request, cookieOpts, done)
-  }
-
+    newSession(secret, request, cookieOpts, done);
+  };
 }
 
 function setCookieExpire(cookie) {
@@ -151,93 +137,98 @@ function setCookieExpire(cookie) {
   return cookie;
 }
 
-function newSession (secret, maxAge, done) {
-    const request = this
-  request.session = new Session(secret, null, null, Date.now() + maxAge);
-  if(done) {
-      done()
-  }
-}
-
-function destroySession (done) {
+function newSession(secret, maxAge, done) {
   const request = this;
+
+  request.session = new Session(secret, null, null, Date.now() + maxAge);
+  if (done) {
+    done();
+  }
+}
+
+function destroySession(done) {
+  const request = this;
+
   request.sessionStore.destroy(request.session.sessionId, (err) => {
-    request.session = null
-    done(err)
-  })
+    request.session = null;
+    done(err);
+  });
+}
+function createSession(id, data) {
+  this.session = new Session(options.secret, id, data, Date.now() + options.cookie.maxAge * 1000);
 }
 
-function ensureDefaults (options) {
-    return new Promise((resolve, reject)=>{
-      options.store = options.store || new Store();
-      options.cookieName = options.cookieName || 'sid'
-      options.cookie = options.cookie || {}
-      if(options.cookie) {
-        options.cookie = {
-          maxAge: isSetDefault(options.cookie.maxAge, 900),
-          path: isSetDefault(options.cookie.path,'/'),
-          httpOnly: isSetDefault(options.cookie.httpOnly,true),
-          secure: isSetDefault(options.cookie.secure, true),
-          expires: 0,
-          sameSite: isSetDefault(options.cookie.sameSite,null),
-          domain: isSetDefault(options.cookie.domain,null)
+function ensureDefaults(options) {
+  return new Promise((resolve, reject) => {
+    options.store = options.store || new Store();
+    options.cookieName = options.cookieName || 'sid';
+    options.cookie = options.cookie || {};
+    if (options.cookie) {
+      options.cookie = {
+        maxAge: isSetDefault(options.cookie.maxAge, 900),
+        path: isSetDefault(options.cookie.path, '/'),
+        httpOnly: isSetDefault(options.cookie.httpOnly, true),
+        secure: isSetDefault(options.cookie.secure, true),
+        expires: 0,
+        sameSite: isSetDefault(options.cookie.sameSite, null),
+        domain: isSetDefault(options.cookie.domain, null)
+      };
+    }
+    options.saveUninitialized = isSetDefault(options.saveUninitialized, true);
+    if (!options.secret) {
+      crypto.randomBytes(32, (err, secret) => {
+        if (err) {
+          reject(err);
+          return;
         }
-      }
-      options.saveUninitialized = isSetDefault(options.saveUninitialized, true);
-      if(!options.secret) {
-        crypto.randomBytes(32, (err, secret) => {
-          if(err) {
-            reject(err)
-            return;
-          }
-          options.secret = secret.toString('base64');
-          resolve(options);
-        })
-      }
-      else {
-          resolve(options);
-      }
-  })
+        options.secret = secret.toString('base64');
+        resolve(options);
+      });
+    } else {
+      resolve(options);
+    }
+  });
 }
 
-function shouldSaveSession (request, cookieOpts, saveUninitialized) {
+function shouldSaveSession(request, cookieOpts, saveUninitialized) {
   if (!saveUninitialized && !request.session._init) {
-    return false
+    return false;
   }
 
-  if(request.session._dataChanged) {
+  if (request.session._dataChanged) {
     request.session._dataChanged = false;
     return true;
   } else {
     return false;
   }
-  if (cookieOpts.secure !== true) {
-    return true
-  }
-  const connection = request.raw.connection
-  if (connection && connection.encrypted === true) {
-    return true
-  }
-  const forwardedProto = request.headers['x-forwarded-proto']
-  return forwardedProto === 'https'
+
+  // if (cookieOpts.secure !== true) {
+  //   return true;
+  // }
+  // const connection = request.raw.connection;
+
+  // if (connection && connection.encrypted === true) {
+  //   return true;
+  // }
+  // const forwardedProto = request.headers['x-forwarded-proto'];
+
+  // return forwardedProto === 'https';
 }
 
-function isSessionModified (session) {
-  return (Object.keys(session).length !== 4)
+function isSessionModified(session) {
+  return Object.keys(session).length !== 4;
 }
 
-var isSetDefault = function(v, d) {
-    if(typeof v == 'number') {
-      return (!Number.isNaN(v)) ? v : d;
-    }
-    return (v !== null && v !== undefined) ? v : d;
+var isSetDefault = function (v, d) {
+  if (typeof v == 'number') {
+    return !Number.isNaN(v) ? v : d;
+  }
+  return v !== null && v !== undefined ? v : d;
 };
 
-exports = module.exports = fastifyPlugin(session,   {
+exports = module.exports = fastifyPlugin(session, {
   fastify: '^3.0.0',
   name: 'fastify-good-session',
-  dependencies: [
-    'fastify-cookie'
-  ]
-})
-module.exports.Store = Store
+  dependencies: ['fastify-cookie']
+});
+module.exports.Store = Store;
