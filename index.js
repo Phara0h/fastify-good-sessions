@@ -6,8 +6,11 @@ var Session = require('./session.js');
 const cookieSignature = require('cookie-signature');
 const crypto = require('crypto');
 
+var sessionOptions = null
+
 function session(fastify, options, next) {
   ensureDefaults(options).then((options) => {
+    sessionOptions = options;
     fastify.addHook('onRequest', (req, res, done) => {
       req.sessionStore = options.store;
       req.session = {};
@@ -155,7 +158,7 @@ function destroySession(done) {
   });
 }
 function createSession(id, data) {
-  this.session = new Session(options.secret, id, data, Date.now() + options.cookie.maxAge * 1000);
+  this.session = new Session(sessionOptions.secret, id, data, Date.now() + sessionOptions.cookie.maxAge * 1000);
 }
 
 function ensureDefaults(options) {
