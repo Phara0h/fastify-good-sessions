@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [v1.4.3](https://github.com/Phara0h/fastify-good-sessions/compare/v1.4.2...v1.4.3)
+
+> 5 November 2021
+
+- Fixed depercations on decorateRequest [`9e4e49f`](https://github.com/Phara0h/fastify-good-sessions/commit/9e4e49fe046118973fc196438cb662972aa86d01)
+- Update README.md [`9e53071`](https://github.com/Phara0h/fastify-good-sessions/commit/9e53071652e0b471f0c83d47457848646a539f3f)
+
 #### [v1.4.2](https://github.com/Phara0h/fastify-good-sessions/compare/v1.4.1...v1.4.2)
 
 > 7 April 2021
