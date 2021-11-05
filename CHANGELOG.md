@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### [v1.4.4](https://github.com/Phara0h/fastify-good-sessions/compare/v1.4.3...v1.4.4)
+
+> 5 November 2021
+
+- Update index.js [`cc3f35d`](https://github.com/Phara0h/fastify-good-sessions/commit/cc3f35dfc30a5895fad173f79cdb741493b326f9)
+
 #### [v1.4.3](https://github.com/Phara0h/fastify-good-sessions/compare/v1.4.2...v1.4.3)
 
 > 5 November 2021
